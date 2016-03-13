@@ -4,10 +4,10 @@ import java.util.*;
 
 public class ListMeasurer extends Measurer implements ListOperationsMeasurer {
     private List<Integer> list;
-    private final int INDEX_FOR_ADD_OPERATION = 0;
 
     public ListMeasurer(List<Integer> list) {
         this.list = list;
+        numberGenerator = new Random();
     }
 
     @Override
@@ -17,39 +17,150 @@ public class ListMeasurer extends Measurer implements ListOperationsMeasurer {
 
     @Override
     public Map<String, String> getResults(int inputDataVolume) {
-        results.put("add", String.valueOf(measureAddOperationByIndexEfficiency(INDEX_FOR_ADD_OPERATION, inputDataVolume)));
+        fillInputCollection(inputDataVolume);
 
-        return results;
+        measurementResults.put("add", String.valueOf(measureAddByIndexOperationEfficiency()));
+        measurementResults.put("get", String.valueOf(measureGetByIndexOperationEfficiency()));
+        measurementResults.put("remove", String.valueOf(measureRemoveByIndexOperationEfficiency()));
+        measurementResults.put("contains", String.valueOf(measureContainsOperationEfficiency()));
+        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(inputDataVolume)));
+        measurementResults.put("iterator.add", String.valueOf(measureIteratorAddOperationEfficiency(inputDataVolume)));
+
+        return measurementResults;
+    }
+
+    private void fillInputCollection(int inputDataVolume) {
+        for (int i = 0; i < inputDataVolume; i++) {
+            int value = numberGenerator.nextInt();
+            list.add(value);
+        }
     }
 
     @Override
-    public double measureAddOperationByIndexEfficiency(int index, int inputDataVolume) {
-        double totalDuration = 0;
-        long start;
-        long end;
-        long duration;
+    public double measureAddByIndexOperationEfficiency() {
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+            int index = (int)(Math.random() * list.size());
+            int value = numberGenerator.nextInt();
 
-        for (int i = 0; i < MIN_QUANTITY_MEASUREMENTS; i++) {
+            startOfMeasurement = System.currentTimeMillis();
+            list.add(index, value);
+            endOfMeasurement = System.currentTimeMillis();
 
-            start = System.currentTimeMillis();
+            updateTotalDuration();
+        }
+
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    @Override
+    public double measureGetByIndexOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
+
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+            int index = numberGenerator.nextInt(list.size());
+
+            startOfMeasurement = System.currentTimeMillis();
+            list.get(index);
+            endOfMeasurement = System.currentTimeMillis();
+
+            updateTotalDuration();
+        }
+
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    @Override
+    public double measureRemoveByIndexOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
+
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+            int index = numberGenerator.nextInt(list.size());
+
+            startOfMeasurement = System.currentTimeMillis();
+            list.remove(index);
+            endOfMeasurement = System.currentTimeMillis();
+
+            updateTotalDuration();
+        }
+
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    @Override
+    public double measureContainsOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
+        boolean isContainedValue = false;
+
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+            int value = numberGenerator.nextInt();
+
+            startOfMeasurement = System.currentTimeMillis();
+            isContainedValue = list.contains(value);
+            endOfMeasurement = System.currentTimeMillis();
+
+            updateTotalDuration();
+        }
+
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    @Override
+    public double measurePopulateOperationEfficiency(int inputDataVolume) {
+        totalDurationOfMeasurements = 0;
+        list.clear();
+
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+
+            startOfMeasurement = System.currentTimeMillis();
             for (int j = 0; j < inputDataVolume; j++) {
-                Random random = new Random();
-                list.add(index, random.nextInt());
+                int value = numberGenerator.nextInt();
+                list.add(value);
             }
-            end = System.currentTimeMillis();
+            endOfMeasurement = System.currentTimeMillis();
 
-            duration = end - start;
-            totalDuration += duration;
+            updateTotalDuration();
+            list.clear();
+        }
 
-            try {
-                list = list.getClass().newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    @Override
+    public double measureIteratorAddOperationEfficiency(int inputDataVolume) {
+        totalDurationOfMeasurements = 0;
+        fillInputCollection(inputDataVolume);
+        int sizeOfUniformSegmentOfCollection = list.size() / QUANTITY_OF_REPETITIONS;
+        int iterationsCounter = 0;
+        int addOperationsCounter = 0;
+
+        ListIterator<Integer> iterator = list.listIterator();
+
+        while (iterator.hasNext()) {
+            iterationsCounter++;
+
+            if (iterationsCounter % sizeOfUniformSegmentOfCollection == 0) {
+                int value = numberGenerator.nextInt();
+
+                startOfMeasurement = System.currentTimeMillis();
+                iterator.add(value);
+                endOfMeasurement = System.currentTimeMillis();
+
+                updateTotalDuration();
+                addOperationsCounter++;
+            }
+
+            if (inputDataVolume == iterationsCounter) {
+                break;
             }
         }
 
-        return totalDuration / MIN_QUANTITY_MEASUREMENTS;
+        return totalDurationOfMeasurements / addOperationsCounter;
     }
+
+    private void updateTotalDuration() {
+        durationOfMeasurement = endOfMeasurement - startOfMeasurement;
+        totalDurationOfMeasurements += durationOfMeasurement;
+    }
+
+
 }

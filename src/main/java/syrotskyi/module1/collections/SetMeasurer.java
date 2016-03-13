@@ -20,4 +20,14 @@ public class SetMeasurer extends Measurer {
     public Map<String, String> getResults(int inputDataVolume) {
         return null;
     }
+
+    @Override
+    public double measureContainsOperationEfficiency() {
+        return 0;
+    }
+
+    @Override
+    public double measurePopulateOperationEfficiency(int inputDataVolume) {
+        return 0;
+    }
 }

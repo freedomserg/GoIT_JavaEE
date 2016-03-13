@@ -16,5 +16,6 @@ public class OutputUtil {
             System.out.print("<" + key + ">" + " - " + value + " ");
         }
 
+        System.out.println();
     }
 }

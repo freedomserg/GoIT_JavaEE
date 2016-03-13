@@ -1,5 +1,11 @@
 package syrotskyi.module1.collections;
 
 public interface ListOperationsMeasurer {
-    double measureAddOperationByIndexEfficiency(int index, int inputDataVolume) throws IllegalAccessException, InstantiationException;
+    double measureAddByIndexOperationEfficiency();
+
+    double measureGetByIndexOperationEfficiency();
+
+    double measureRemoveByIndexOperationEfficiency();
+
+    double measureIteratorAddOperationEfficiency(int inputDataVolume);
 }
