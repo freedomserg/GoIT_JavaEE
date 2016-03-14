@@ -1,7 +1,6 @@
 package syrotskyi.module1.collections;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -15,7 +14,7 @@ public abstract class Measurer {
     protected int sizeOfUniformSegmentOfCollection;
     protected int iterationsCounter;
     protected int updateCollectionCounter;
-    protected static Map<String, String> measurementResults = new TreeMap<>();
+    protected static TreeMap<String, String> measurementResults = new TreeMap<>();
     public final int QUANTITY_OF_REPETITIONS = 100;
 
     {
@@ -28,7 +27,7 @@ public abstract class Measurer {
         measurementResults.put("iterator.remove", null);
     }
 
-    public abstract Map<String, String> getResults(int inputCollectionDataVolume);
+    public abstract TreeMap<String, String> getResults(int inputCollectionDataVolume);
 
     public abstract void fillInputCollection();
 
