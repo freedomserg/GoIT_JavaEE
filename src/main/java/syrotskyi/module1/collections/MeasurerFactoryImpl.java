@@ -1,5 +1,7 @@
 package syrotskyi.module1.collections;
 
+import syrotskyi.module1.collections.exceptions.UnsupportedTypeOfCollectionMeasurerEfficiencyException;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +15,7 @@ public class MeasurerFactoryImpl implements MeasurerFactory {
         } else if (collection instanceof Set) {
             return new SetMeasurer((Set<Integer>)collection);
         } else {
-            throw new InvalidTypeOfCollectionException();
+            throw new UnsupportedTypeOfCollectionMeasurerEfficiencyException();
         }
     }
 }

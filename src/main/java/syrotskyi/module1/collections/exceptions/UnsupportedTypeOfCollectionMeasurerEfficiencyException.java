@@ -1,0 +1,4 @@
+package syrotskyi.module1.collections.exceptions;
+
+public class UnsupportedTypeOfCollectionMeasurerEfficiencyException extends MeasurerEfficiencyException {
+}

@@ -15,17 +15,14 @@ public class EfficiencyComparator {
 
     private static void compare(ArrayList<Collection> collections) {
         measureForTenThousandVolume(collections);
-
         measureForHundredThousandVolume(collections);
-
         measureForOneMillionVolume(collections);
-
     }
 
-    private static void measureForOneMillionVolume(ArrayList<Collection> collections) {
+    private static void measureForTenThousandVolume(ArrayList<Collection> collections) {
         for (Collection collection : collections) {
             Measurer measurer = new MeasurerFactoryImpl().makeMeasurer(collection);
-            Map<String, String> measureResults = measurer.getResults(ONE_MILLION_DATA_VOLUME);
+            Map<String, String> measureResults = measurer.getResults(TEN_THOUSAND_DATA_VOLUME);
             OutputUtil.printAndSaveResults(measurer.getCollectionType(), measureResults);
         }
     }
@@ -38,10 +35,10 @@ public class EfficiencyComparator {
         }
     }
 
-    private static void measureForTenThousandVolume(ArrayList<Collection> collections) {
+    private static void measureForOneMillionVolume(ArrayList<Collection> collections) {
         for (Collection collection : collections) {
             Measurer measurer = new MeasurerFactoryImpl().makeMeasurer(collection);
-            Map<String, String> measureResults = measurer.getResults(TEN_THOUSAND_DATA_VOLUME);
+            Map<String, String> measureResults = measurer.getResults(ONE_MILLION_DATA_VOLUME);
             OutputUtil.printAndSaveResults(measurer.getCollectionType(), measureResults);
         }
     }

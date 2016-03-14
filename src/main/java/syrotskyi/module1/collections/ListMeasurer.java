@@ -2,12 +2,12 @@ package syrotskyi.module1.collections;
 
 import java.util.*;
 
-public class ListMeasurer extends Measurer implements ListOperationsMeasurer {
+public class ListMeasurer extends Measurer implements ListOperationsMeasureAble {
     private List<Integer> list;
+    private ListIterator<Integer> iterator;
 
     public ListMeasurer(List<Integer> list) {
         this.list = list;
-        numberGenerator = new Random();
     }
 
     @Override
@@ -16,151 +16,132 @@ public class ListMeasurer extends Measurer implements ListOperationsMeasurer {
     }
 
     @Override
-    public Map<String, String> getResults(int inputDataVolume) {
-        fillInputCollection(inputDataVolume);
-
-        measurementResults.put("add", String.valueOf(measureAddByIndexOperationEfficiency()));
-        measurementResults.put("get", String.valueOf(measureGetByIndexOperationEfficiency()));
-        measurementResults.put("remove", String.valueOf(measureRemoveByIndexOperationEfficiency()));
-        measurementResults.put("contains", String.valueOf(measureContainsOperationEfficiency()));
-        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(inputDataVolume)));
-        measurementResults.put("iterator.add", String.valueOf(measureIteratorAddOperationEfficiency(inputDataVolume)));
-
+    public Map<String, String> getResults(int inputCollectionDataVolume) {
+        this.inputCollectionDataVolume = inputCollectionDataVolume;
+        fillInputCollection();
+        fillResultingMap();
         return measurementResults;
     }
 
-    private void fillInputCollection(int inputDataVolume) {
-        for (int i = 0; i < inputDataVolume; i++) {
-            int value = numberGenerator.nextInt();
+    @Override
+    public void fillInputCollection() {
+        for (int i = 0; i < inputCollectionDataVolume; i++) {
+            int value = getIntegerNumber();
             list.add(value);
         }
     }
 
     @Override
+    public void fillResultingMap() {
+        measurementResults.put("add", String.valueOf(measureAddByIndexOperationEfficiency()));
+        measurementResults.put("get", String.valueOf(measureGetByIndexOperationEfficiency()));
+        measurementResults.put("remove", String.valueOf(measureRemoveByIndexOperationEfficiency()));
+        measurementResults.put("contains", String.valueOf(measureContainsOperationEfficiency(list)));
+        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(list)));
+        measurementResults.put("iterator.add", String.valueOf(measureIteratorAddOperationEfficiency()));
+        measurementResults.put("iterator.remove", String.valueOf(measureIteratorRemoveOperationEfficiency()));
+    }
+
+    @Override
     public double measureAddByIndexOperationEfficiency() {
         for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-            int index = (int)(Math.random() * list.size());
-            int value = numberGenerator.nextInt();
-
+            int index = getIndex();
+            int value = getIntegerNumber();
             startOfMeasurement = System.currentTimeMillis();
             list.add(index, value);
             endOfMeasurement = System.currentTimeMillis();
-
             updateTotalDuration();
         }
-
         return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
+
+    private int getIndex() {
+        return (int)(Math.random() * list.size());
     }
 
     @Override
     public double measureGetByIndexOperationEfficiency() {
         totalDurationOfMeasurements = 0;
-
         for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-            int index = numberGenerator.nextInt(list.size());
-
+            int index = getIndex();
             startOfMeasurement = System.currentTimeMillis();
             list.get(index);
             endOfMeasurement = System.currentTimeMillis();
-
             updateTotalDuration();
         }
-
         return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
     }
 
     @Override
     public double measureRemoveByIndexOperationEfficiency() {
         totalDurationOfMeasurements = 0;
-
         for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-            int index = numberGenerator.nextInt(list.size());
-
+            int index = getIndex();
             startOfMeasurement = System.currentTimeMillis();
             list.remove(index);
             endOfMeasurement = System.currentTimeMillis();
-
             updateTotalDuration();
         }
-
         return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
     }
 
     @Override
-    public double measureContainsOperationEfficiency() {
+    public double measureIteratorAddOperationEfficiency() {
         totalDurationOfMeasurements = 0;
-        boolean isContainedValue = false;
-
-        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-            int value = numberGenerator.nextInt();
-
-            startOfMeasurement = System.currentTimeMillis();
-            isContainedValue = list.contains(value);
-            endOfMeasurement = System.currentTimeMillis();
-
-            updateTotalDuration();
-        }
-
-        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
-    }
-
-    @Override
-    public double measurePopulateOperationEfficiency(int inputDataVolume) {
-        totalDurationOfMeasurements = 0;
-        list.clear();
-
-        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-
-            startOfMeasurement = System.currentTimeMillis();
-            for (int j = 0; j < inputDataVolume; j++) {
-                int value = numberGenerator.nextInt();
-                list.add(value);
-            }
-            endOfMeasurement = System.currentTimeMillis();
-
-            updateTotalDuration();
-            list.clear();
-        }
-
-        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
-    }
-
-    @Override
-    public double measureIteratorAddOperationEfficiency(int inputDataVolume) {
-        totalDurationOfMeasurements = 0;
-        fillInputCollection(inputDataVolume);
-        int sizeOfUniformSegmentOfCollection = list.size() / QUANTITY_OF_REPETITIONS;
-        int iterationsCounter = 0;
-        int addOperationsCounter = 0;
-
-        ListIterator<Integer> iterator = list.listIterator();
+        fillInputCollection(); //fill input collection because it have been cleared by measurePopulateOperationEfficiency() method
+        sizeOfUniformSegmentOfCollection = getSizeOfUniformSegmentOfCollection();
+        iterator = list.listIterator();
+        iterationsCounter = 0;
+        updateCollectionCounter = 0;
 
         while (iterator.hasNext()) {
+            int currentValue = iterator.next();
             iterationsCounter++;
-
-            if (iterationsCounter % sizeOfUniformSegmentOfCollection == 0) {
-                int value = numberGenerator.nextInt();
-
+            if (reachNextUniformSegment()) {
+                int insertedValue = getIntegerNumber();
                 startOfMeasurement = System.currentTimeMillis();
-                iterator.add(value);
+                iterator.add(insertedValue);
                 endOfMeasurement = System.currentTimeMillis();
-
                 updateTotalDuration();
-                addOperationsCounter++;
+                updateCollectionCounter++;
             }
 
-            if (inputDataVolume == iterationsCounter) {
+            if (updateCollectionCounter == QUANTITY_OF_REPETITIONS) {
                 break;
             }
         }
-
-        return totalDurationOfMeasurements / addOperationsCounter;
+        return totalDurationOfMeasurements / updateCollectionCounter;
     }
 
-    private void updateTotalDuration() {
-        durationOfMeasurement = endOfMeasurement - startOfMeasurement;
-        totalDurationOfMeasurements += durationOfMeasurement;
+    @Override
+    public int getSizeOfUniformSegmentOfCollection() {
+        return list.size() / QUANTITY_OF_REPETITIONS;
     }
 
+    @Override
+    public double measureIteratorRemoveOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
+        sizeOfUniformSegmentOfCollection = getSizeOfUniformSegmentOfCollection();
+        iterator = list.listIterator();
+        iterationsCounter = 0;
+        updateCollectionCounter = 0;
 
+        while (iterator.hasNext()) {
+            int currentValue = iterator.next();
+            iterationsCounter++;
+
+            if (reachNextUniformSegment()) {
+                startOfMeasurement = System.currentTimeMillis();
+                iterator.remove();
+                endOfMeasurement = System.currentTimeMillis();
+                updateTotalDuration();
+                updateCollectionCounter++;
+            }
+
+            if (updateCollectionCounter == QUANTITY_OF_REPETITIONS) {
+                break;
+            }
+        }
+        return totalDurationOfMeasurements / updateCollectionCounter;
+    }
 }

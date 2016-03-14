@@ -1,11 +1,13 @@
 package syrotskyi.module1.collections;
 
-public interface ListOperationsMeasurer {
+public interface ListOperationsMeasureAble {
     double measureAddByIndexOperationEfficiency();
 
     double measureGetByIndexOperationEfficiency();
 
     double measureRemoveByIndexOperationEfficiency();
 
-    double measureIteratorAddOperationEfficiency(int inputDataVolume);
+    double measureIteratorAddOperationEfficiency();
+
+    double measureIteratorRemoveOperationEfficiency();
 }
