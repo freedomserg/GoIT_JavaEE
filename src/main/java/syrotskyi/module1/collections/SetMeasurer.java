@@ -18,29 +18,21 @@ public class SetMeasurer extends Measurer implements SetOperationsMeasureAble {
     @Override
     public TreeMap<String, String> getResults(int inputCollectionDataVolume) {
         this.inputCollectionDataVolume = inputCollectionDataVolume;
-        fillInputCollection();
         fillResultingMap();
         return measurementResults;
     }
 
     @Override
-    public void fillInputCollection() {
-        for (int i = 0; i < inputCollectionDataVolume; i++) {
-            int value = getIntegerNumber();
-            set.add(value);
-        }
-    }
-
-    @Override
     public void fillResultingMap() {
+        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(set)));
         measurementResults.put("add", String.valueOf(measureAddByValueOperationEfficiency()));
         measurementResults.put("remove", String.valueOf(measureRemoveByValueOperationEfficiency()));
         measurementResults.put("contains", String.valueOf(measureContainsOperationEfficiency(set)));
-        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(set)));
     }
 
     @Override
     public double measureAddByValueOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
         for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
             int value = getIntegerNumber();
             startOfMeasurement = System.currentTimeMillis();
@@ -58,7 +50,6 @@ public class SetMeasurer extends Measurer implements SetOperationsMeasureAble {
         iterator = set.iterator();
 
         List<Integer> numbersForRemoving = selectNumbersForRemoving();
-
         for (Integer nextNumberForRemoving : numbersForRemoving) {
             startOfMeasurement = System.currentTimeMillis();
             set.remove(nextNumberForRemoving);

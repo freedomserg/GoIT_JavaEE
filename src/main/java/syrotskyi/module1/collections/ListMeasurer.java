@@ -18,32 +18,24 @@ public class ListMeasurer extends Measurer implements ListOperationsMeasureAble 
     @Override
     public TreeMap<String, String> getResults(int inputCollectionDataVolume) {
         this.inputCollectionDataVolume = inputCollectionDataVolume;
-        fillInputCollection();
         fillResultingMap();
         return measurementResults;
     }
 
     @Override
-    public void fillInputCollection() {
-        for (int i = 0; i < inputCollectionDataVolume; i++) {
-            int value = getIntegerNumber();
-            list.add(value);
-        }
-    }
-
-    @Override
     public void fillResultingMap() {
+        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(list)));
         measurementResults.put("add", String.valueOf(measureAddByIndexOperationEfficiency()));
         measurementResults.put("get", String.valueOf(measureGetByIndexOperationEfficiency()));
         measurementResults.put("remove", String.valueOf(measureRemoveByIndexOperationEfficiency()));
         measurementResults.put("contains", String.valueOf(measureContainsOperationEfficiency(list)));
-        measurementResults.put("populate", String.valueOf(measurePopulateOperationEfficiency(list)));
         measurementResults.put("iterator.add", String.valueOf(measureIteratorAddOperationEfficiency()));
         measurementResults.put("iterator.remove", String.valueOf(measureIteratorRemoveOperationEfficiency()));
     }
 
     @Override
     public double measureAddByIndexOperationEfficiency() {
+        totalDurationOfMeasurements = 0;
         for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
             int index = getIndex();
             int value = getIntegerNumber();
@@ -88,7 +80,6 @@ public class ListMeasurer extends Measurer implements ListOperationsMeasureAble 
     @Override
     public double measureIteratorAddOperationEfficiency() {
         totalDurationOfMeasurements = 0;
-        fillInputCollection(); //fill input collection because it have been cleared by measurePopulateOperationEfficiency() method
         sizeOfUniformSegmentOfCollection = getSizeOfUniformSegmentOfCollection();
         iterator = list.listIterator();
         iterationsCounter = 0;

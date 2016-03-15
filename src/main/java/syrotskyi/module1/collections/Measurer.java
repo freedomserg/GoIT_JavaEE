@@ -29,9 +29,24 @@ public abstract class Measurer {
 
     public abstract TreeMap<String, String> getResults(int inputCollectionDataVolume);
 
-    public abstract void fillInputCollection();
-
     public abstract void fillResultingMap();
+
+    public double measurePopulateOperationEfficiency(Collection collection) {
+        totalDurationOfMeasurements = 0;
+        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
+            if (collection.size() > 0) {
+                collection.clear();
+            }
+            startOfMeasurement = System.currentTimeMillis();
+            for (int j = 0; j < inputCollectionDataVolume; j++) {
+                int value = getIntegerNumber();
+                collection.add(value);
+            }
+            endOfMeasurement = System.currentTimeMillis();
+            updateTotalDuration();
+        }
+        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
+    }
 
     public int getIntegerNumber() {
         return numberGenerator.nextInt();
@@ -53,22 +68,6 @@ public abstract class Measurer {
             isContainedValue = collection.contains(value);
             endOfMeasurement = System.currentTimeMillis();
             updateTotalDuration();
-        }
-        return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
-    }
-
-    public double measurePopulateOperationEfficiency(Collection collection) {
-        totalDurationOfMeasurements = 0;
-        collection.clear();
-        for (int i = 0; i < QUANTITY_OF_REPETITIONS; i++) {
-            startOfMeasurement = System.currentTimeMillis();
-            for (int j = 0; j < inputCollectionDataVolume; j++) {
-                int value = getIntegerNumber();
-                collection.add(value);
-            }
-            endOfMeasurement = System.currentTimeMillis();
-            updateTotalDuration();
-            collection.clear();
         }
         return totalDurationOfMeasurements / QUANTITY_OF_REPETITIONS;
     }
