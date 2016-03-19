@@ -2,6 +2,7 @@ package syrotskyi.module2.generics;
 
 import org.junit.Test;
 import syrotskyi.module2.generics.employee.*;
+import syrotskyi.module2.generics.shape.*;
 import syrotskyi.module2.generics.tasksExecutorFramework.Executor;
 import syrotskyi.module2.generics.tasksExecutorFramework.ExecutorImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Task;
@@ -39,7 +40,38 @@ public class ExecutorImplTest {
         for (Employee employee : employeeExecutor.getInvalidResults()) {
             System.out.println(employee);
         }
-
     }
 
+    @Test
+    public void testShapeExecutor() {
+        Executor<Shape> shapeExecutor = new ExecutorImpl<>();
+        Validator<Shape> shapeValidator = new ShapeValidatorImpl();
+        Task<Shape> task1 = new ShapeTaskImpl(new Circle(4));
+        Task<Shape> task2 = new ShapeTaskImpl(new Circle(50));
+        Task<Shape> task3 = new ShapeTaskImpl(new Rectangle(5, 15));
+        Task<Shape> task4 = new ShapeTaskImpl(new Rectangle(2, 12));
+        Task<Shape> task5 = new ShapeTaskImpl(new Rectangle(-1, 9));
+        Task<Shape> task6 = new ShapeTaskImpl(new Circle(-5));
+
+        shapeExecutor.addTask(task1);
+        shapeExecutor.addTask(task2);
+        shapeExecutor.addTask(task3, shapeValidator);
+        shapeExecutor.addTask(task4);
+        shapeExecutor.addTask(task5);
+        shapeExecutor.addTask(task6);
+
+        shapeExecutor.execute();
+
+        System.out.println();
+        System.out.println("Valid results:");
+        for (Shape shape : shapeExecutor.getValidResults()) {
+            System.out.println(shape);
+        }
+        System.out.println();
+
+        System.out.println("Invalid results:");
+        for (Shape shape : shapeExecutor.getInvalidResults()) {
+            System.out.println(shape);
+        }
+    }
 }
