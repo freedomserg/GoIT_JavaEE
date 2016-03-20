@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class OutputUtil {
     public static final int STANDARD_LINE_WIDTH = 16;
@@ -71,13 +70,13 @@ public class OutputUtil {
         }
     }
 
-    public static void printAndSaveResults(String collectionType, TreeMap<String, String> measurementResults) throws IOException {
+    public static void printAndSaveResults(String collectionType, Map<String, String> measurementResults) throws IOException {
         String content = createContent(collectionType, measurementResults);
         printResultsToConsole(content);
         writeResultsToFile(content);
     }
 
-    private static String createContent(String collectionType, TreeMap<String, String> measurementResults) {
+    private static String createContent(String collectionType, Map<String, String> measurementResults) {
         StringBuilder content = new StringBuilder();
         String type = String.format("|%-16.16s|", alignByCenter(collectionType));
         content.append(type);

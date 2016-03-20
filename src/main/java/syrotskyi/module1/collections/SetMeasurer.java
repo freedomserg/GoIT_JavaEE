@@ -16,7 +16,7 @@ public class SetMeasurer extends Measurer implements SetOperationsMeasureAble {
     }
 
     @Override
-    public TreeMap<String, String> getResults(int inputCollectionDataVolume) {
+    public Map<String, String> getResults(int inputCollectionDataVolume) {
         this.inputCollectionDataVolume = inputCollectionDataVolume;
         fillResultingMap();
         return measurementResults;

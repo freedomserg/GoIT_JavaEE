@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Application {
     public static void main(String[] args) throws IOException {
-        ArrayList<Collection> collectionsToCompare = new ArrayList<>();
+        List<Collection> collectionsToCompare = new ArrayList<>();
         collectionsToCompare.add(new ArrayList<>());
         collectionsToCompare.add(new LinkedList<>());
         collectionsToCompare.add(new HashSet<>());

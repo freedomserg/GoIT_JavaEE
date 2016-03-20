@@ -16,7 +16,7 @@ public class ListMeasurer extends Measurer implements ListOperationsMeasureAble 
     }
 
     @Override
-    public TreeMap<String, String> getResults(int inputCollectionDataVolume) {
+    public Map<String, String> getResults(int inputCollectionDataVolume) {
         this.inputCollectionDataVolume = inputCollectionDataVolume;
         fillResultingMap();
         return measurementResults;
