@@ -18,7 +18,7 @@ public class SquareSumImpl implements SquareSum {
         IntStream.range(0, numberOfThreads).forEach(i -> {
             tasks.add(() -> {
                 int registered = phaser.register();
-                System.out.println(Thread.currentThread().getName() + " registered, phase # " + registered);
+                //System.out.println(Thread.currentThread().getName() + " registered, phase # " + registered);
 
                 long intermediateSum = 0;
                 int startPos = (values.length * i) / numberOfThreads;
