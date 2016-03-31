@@ -15,7 +15,7 @@ public class SquareSumImplTest {
         IntStream.range(0, digits.length).forEach(i -> {
             digits[i] = random.nextInt(100);
         });
-        long actual = new SquareSumImpl().getSquareSum(digits, 4);
+        long actual = new SquareSumImpl().getSquareSum(digits, 7);
 
         long expected = 0;
         for (int digit : digits) {
