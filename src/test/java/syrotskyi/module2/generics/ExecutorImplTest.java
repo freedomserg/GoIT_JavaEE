@@ -3,13 +3,11 @@ package syrotskyi.module2.generics;
 import org.junit.Assert;
 import org.junit.Test;
 import syrotskyi.module2.generics.employee.*;
-import syrotskyi.module2.generics.shape.Circle;
-import syrotskyi.module2.generics.shape.Rectangle;
-import syrotskyi.module2.generics.shape.Shape;
-import syrotskyi.module2.generics.shape.ShapeTaskImpl;
+import syrotskyi.module2.generics.shape.*;
 import syrotskyi.module2.generics.tasksExecutorFramework.Executor;
 import syrotskyi.module2.generics.tasksExecutorFramework.ExecutorImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Task;
+import syrotskyi.module2.generics.tasksExecutorFramework.Validator;
 import syrotskyi.module2.generics.tasksExecutorFramework.exceptions.AllTasksWereExecutedException;
 import syrotskyi.module2.generics.tasksExecutorFramework.exceptions.TasksAreNotExecutedException;
 
@@ -18,7 +16,7 @@ import java.util.List;
 public class ExecutorImplTest {
 
     @Test
-    public void testEmployeeExecutor() {
+    public void testEmployeeExecutorWithAnonymosValidators() {
         Executor<Employee> employeeExecutor = new ExecutorImpl<>();
         Task<Employee> task1 = new EmployeeTaskImpl(new FixedPaymentEmployee("John", 700));
         Task<Employee> task2 = new EmployeeTaskImpl(new HourlyWageEmployee("Denis", 5));
@@ -28,10 +26,10 @@ public class ExecutorImplTest {
         Task<Employee> task6 = new EmployeeTaskImpl(new FixedPaymentEmployee("Ann", 750));
 
         employeeExecutor.addTask(task1);
-        employeeExecutor.addTask(task2);
+        employeeExecutor.addTask(task2, result -> result.getMonthlySalary() <= 900);
         employeeExecutor.addTask(task3, result -> result.getMonthlySalary() <= 900);
-        employeeExecutor.addTask(task4);
-        employeeExecutor.addTask(task5);
+        employeeExecutor.addTask(task4, result -> result.getMonthlySalary() <= 900);
+        employeeExecutor.addTask(task5, result -> result.getMonthlySalary() <= 900);
         employeeExecutor.addTask(task6);
 
         employeeExecutor.execute();
@@ -52,8 +50,9 @@ public class ExecutorImplTest {
     }
 
     @Test
-    public void testShapeExecutor() {
+    public void testShapeExecutorWithValidator() {
         Executor<Shape> shapeExecutor = new ExecutorImpl<>();
+        Validator<Shape> validator = new ShapeValidatorImpl();
         Task<Shape> task1 = new ShapeTaskImpl(new Circle(4));
         Task<Shape> task2 = new ShapeTaskImpl(new Circle(50));
         Task<Shape> task3 = new ShapeTaskImpl(new Rectangle(5, 15));
@@ -63,16 +62,16 @@ public class ExecutorImplTest {
 
         shapeExecutor.addTask(task1);
         shapeExecutor.addTask(task2);
-        shapeExecutor.addTask(task3, result -> result.getSquare() >= 0);
-        shapeExecutor.addTask(task4);
+        shapeExecutor.addTask(task3);
+        shapeExecutor.addTask(task4, validator);
         shapeExecutor.addTask(task5);
         shapeExecutor.addTask(task6);
 
         shapeExecutor.execute();
 
-        Assert.assertEquals("Wrong number of invalid results", 2, shapeExecutor.getInvalidResults().size());
+        Assert.assertEquals("Wrong number of invalid results", 3, shapeExecutor.getInvalidResults().size());
         Assert.assertEquals("Wrong square", Double.valueOf(24.0),
-                Double.valueOf(shapeExecutor.getValidResults().get(3).getSquare()));
+                Double.valueOf(shapeExecutor.getValidResults().get(2).getSquare()));
     }
 
     @Test(expected = AllTasksWereExecutedException.class)
