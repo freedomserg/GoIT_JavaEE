@@ -10,6 +10,10 @@ import syrotskyi.module2.generics.shape.ShapeTaskImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Executor;
 import syrotskyi.module2.generics.tasksExecutorFramework.ExecutorImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Task;
+import syrotskyi.module2.generics.tasksExecutorFramework.exceptions.AllTasksWereExecutedException;
+import syrotskyi.module2.generics.tasksExecutorFramework.exceptions.TasksAreNotExecutedException;
+
+import java.util.List;
 
 public class ExecutorImplTest {
 
@@ -37,6 +41,16 @@ public class ExecutorImplTest {
                 Double.valueOf(employeeExecutor.getValidResults().get(1).getMonthlySalary()));
     }
 
+    @Test(expected = TasksAreNotExecutedException.class)
+    public void testEmployeeExecutorWithTasksAreNotExecutedException() throws Exception {
+        Executor<Employee> employeeExecutor = new ExecutorImpl<>();
+        Task<Employee> task1 = new EmployeeTaskImpl(new FixedPaymentEmployee("Rick", 1000));
+
+        employeeExecutor.addTask(task1);
+
+        List<Employee> validResults = employeeExecutor.getValidResults();
+    }
+
     @Test
     public void testShapeExecutor() {
         Executor<Shape> shapeExecutor = new ExecutorImpl<>();
@@ -59,5 +73,17 @@ public class ExecutorImplTest {
         Assert.assertEquals("Wrong number of invalid results", 2, shapeExecutor.getInvalidResults().size());
         Assert.assertEquals("Wrong square", Double.valueOf(24.0),
                 Double.valueOf(shapeExecutor.getValidResults().get(3).getSquare()));
+    }
+
+    @Test(expected = AllTasksWereExecutedException.class)
+    public void testShapeExecutorWithAllTasksWereExecutedException() throws Exception {
+        Executor<Shape> shapeExecutor = new ExecutorImpl<>();
+        Task<Shape> task1 = new ShapeTaskImpl(new Circle(7));
+
+        shapeExecutor.addTask(task1, result -> result.getSquare() >= 0);
+
+        shapeExecutor.execute();
+
+        shapeExecutor.addTask(task1);
     }
 }
