@@ -1,19 +1,21 @@
 package syrotskyi.module2.generics;
 
+import org.junit.Assert;
 import org.junit.Test;
 import syrotskyi.module2.generics.employee.*;
-import syrotskyi.module2.generics.shape.*;
+import syrotskyi.module2.generics.shape.Circle;
+import syrotskyi.module2.generics.shape.Rectangle;
+import syrotskyi.module2.generics.shape.Shape;
+import syrotskyi.module2.generics.shape.ShapeTaskImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Executor;
 import syrotskyi.module2.generics.tasksExecutorFramework.ExecutorImpl;
 import syrotskyi.module2.generics.tasksExecutorFramework.Task;
-import syrotskyi.module2.generics.tasksExecutorFramework.Validator;
 
 public class ExecutorImplTest {
 
     @Test
     public void testEmployeeExecutor() {
         Executor<Employee> employeeExecutor = new ExecutorImpl<>();
-        Validator<Employee> employeeValidator = new EmployeeValidatorImpl();
         Task<Employee> task1 = new EmployeeTaskImpl(new FixedPaymentEmployee("John", 700));
         Task<Employee> task2 = new EmployeeTaskImpl(new HourlyWageEmployee("Denis", 5));
         Task<Employee> task3 = new EmployeeTaskImpl(new Manager("Greg", 700, 25));
@@ -23,29 +25,21 @@ public class ExecutorImplTest {
 
         employeeExecutor.addTask(task1);
         employeeExecutor.addTask(task2);
-        employeeExecutor.addTask(task3, employeeValidator);
+        employeeExecutor.addTask(task3, result -> result.getMonthlySalary() <= 900);
         employeeExecutor.addTask(task4);
         employeeExecutor.addTask(task5);
         employeeExecutor.addTask(task6);
 
         employeeExecutor.execute();
 
-        System.out.println("Valid results:");
-        for (Employee employee : employeeExecutor.getValidResults()) {
-            System.out.println(employee);
-        }
-        System.out.println();
-
-        System.out.println("Invalid results:");
-        for (Employee employee : employeeExecutor.getInvalidResults()) {
-            System.out.println(employee);
-        }
+        Assert.assertEquals("Wrong number of valid results", 4, employeeExecutor.getValidResults().size());
+        Assert.assertEquals("Wrong salary",  Double.valueOf(840.0),
+                Double.valueOf(employeeExecutor.getValidResults().get(1).getMonthlySalary()));
     }
 
     @Test
     public void testShapeExecutor() {
         Executor<Shape> shapeExecutor = new ExecutorImpl<>();
-        Validator<Shape> shapeValidator = new ShapeValidatorImpl();
         Task<Shape> task1 = new ShapeTaskImpl(new Circle(4));
         Task<Shape> task2 = new ShapeTaskImpl(new Circle(50));
         Task<Shape> task3 = new ShapeTaskImpl(new Rectangle(5, 15));
@@ -55,23 +49,15 @@ public class ExecutorImplTest {
 
         shapeExecutor.addTask(task1);
         shapeExecutor.addTask(task2);
-        shapeExecutor.addTask(task3, shapeValidator);
+        shapeExecutor.addTask(task3, result -> result.getSquare() >= 0);
         shapeExecutor.addTask(task4);
         shapeExecutor.addTask(task5);
         shapeExecutor.addTask(task6);
 
         shapeExecutor.execute();
 
-        System.out.println();
-        System.out.println("Valid results:");
-        for (Shape shape : shapeExecutor.getValidResults()) {
-            System.out.println(shape);
-        }
-        System.out.println();
-
-        System.out.println("Invalid results:");
-        for (Shape shape : shapeExecutor.getInvalidResults()) {
-            System.out.println(shape);
-        }
+        Assert.assertEquals("Wrong number of invalid results", 2, shapeExecutor.getInvalidResults().size());
+        Assert.assertEquals("Wrong square", Double.valueOf(24.0),
+                Double.valueOf(shapeExecutor.getValidResults().get(3).getSquare()));
     }
 }
